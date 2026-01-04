@@ -15,9 +15,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from .routers import projects_router, features_router, agent_router, spec_creation_router, filesystem_router
+from .routers import projects_router, features_router, agent_router, spec_creation_router, filesystem_router, assistant_chat_router
 from .websocket import project_websocket
 from .services.process_manager import cleanup_all_managers
+from .services.assistant_chat_session import cleanup_all_sessions as cleanup_assistant_sessions
 from .schemas import SetupStatus
 
 
@@ -31,8 +32,9 @@ async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown."""
     # Startup
     yield
-    # Shutdown - cleanup all running agents
+    # Shutdown - cleanup all running agents and assistant sessions
     await cleanup_all_managers()
+    await cleanup_assistant_sessions()
 
 
 # Create FastAPI app
@@ -83,6 +85,7 @@ app.include_router(features_router)
 app.include_router(agent_router)
 app.include_router(spec_creation_router)
 app.include_router(filesystem_router)
+app.include_router(assistant_chat_router)
 
 
 # ============================================================================

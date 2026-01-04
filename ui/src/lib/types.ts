@@ -229,3 +229,69 @@ export interface ChatMessage {
   questions?: SpecQuestion[]
   isStreaming?: boolean
 }
+
+// ============================================================================
+// Assistant Chat Types
+// ============================================================================
+
+export interface AssistantConversation {
+  id: number
+  project_name: string
+  title: string | null
+  created_at: string | null
+  updated_at: string | null
+  message_count: number
+}
+
+export interface AssistantMessage {
+  id: number
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: string | null
+}
+
+export interface AssistantConversationDetail {
+  id: number
+  project_name: string
+  title: string | null
+  created_at: string | null
+  updated_at: string | null
+  messages: AssistantMessage[]
+}
+
+export interface AssistantChatTextMessage {
+  type: 'text'
+  content: string
+}
+
+export interface AssistantChatToolCallMessage {
+  type: 'tool_call'
+  tool: string
+  input: Record<string, unknown>
+}
+
+export interface AssistantChatResponseDoneMessage {
+  type: 'response_done'
+}
+
+export interface AssistantChatErrorMessage {
+  type: 'error'
+  content: string
+}
+
+export interface AssistantChatConversationCreatedMessage {
+  type: 'conversation_created'
+  conversation_id: number
+}
+
+export interface AssistantChatPongMessage {
+  type: 'pong'
+}
+
+export type AssistantChatServerMessage =
+  | AssistantChatTextMessage
+  | AssistantChatToolCallMessage
+  | AssistantChatResponseDoneMessage
+  | AssistantChatErrorMessage
+  | AssistantChatConversationCreatedMessage
+  | AssistantChatPongMessage

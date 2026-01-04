@@ -14,6 +14,8 @@ import { AddFeatureForm } from './components/AddFeatureForm'
 import { FeatureModal } from './components/FeatureModal'
 import { DebugLogViewer } from './components/DebugLogViewer'
 import { AgentThought } from './components/AgentThought'
+import { AssistantFAB } from './components/AssistantFAB'
+import { AssistantPanel } from './components/AssistantPanel'
 import { Plus, Loader2 } from 'lucide-react'
 import type { Feature } from './lib/types'
 
@@ -31,6 +33,7 @@ function App() {
   const [setupComplete, setSetupComplete] = useState(true) // Start optimistic
   const [debugOpen, setDebugOpen] = useState(false)
   const [debugPanelHeight, setDebugPanelHeight] = useState(288) // Default height
+  const [assistantOpen, setAssistantOpen] = useState(false)
 
   const { data: projects, isLoading: projectsLoading } = useProjects()
   const { data: features } = useFeatures(selectedProject)
@@ -84,9 +87,17 @@ function App() {
         setShowAddFeature(true)
       }
 
+      // A : Toggle assistant panel (when project selected)
+      if ((e.key === 'a' || e.key === 'A') && selectedProject) {
+        e.preventDefault()
+        setAssistantOpen(prev => !prev)
+      }
+
       // Escape : Close modals
       if (e.key === 'Escape') {
-        if (showAddFeature) {
+        if (assistantOpen) {
+          setAssistantOpen(false)
+        } else if (showAddFeature) {
           setShowAddFeature(false)
         } else if (selectedFeature) {
           setSelectedFeature(null)
@@ -98,7 +109,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedProject, showAddFeature, selectedFeature, debugOpen])
+  }, [selectedProject, showAddFeature, selectedFeature, debugOpen, assistantOpen])
 
   // Combine WebSocket progress with feature data
   const progress = wsState.progress.total > 0 ? wsState.progress : {
@@ -243,6 +254,21 @@ function App() {
           onClear={wsState.clearLogs}
           onHeightChange={setDebugPanelHeight}
         />
+      )}
+
+      {/* Assistant FAB and Panel */}
+      {selectedProject && (
+        <>
+          <AssistantFAB
+            onClick={() => setAssistantOpen(!assistantOpen)}
+            isOpen={assistantOpen}
+          />
+          <AssistantPanel
+            projectName={selectedProject}
+            isOpen={assistantOpen}
+            onClose={() => setAssistantOpen(false)}
+          />
+        </>
       )}
     </div>
   )

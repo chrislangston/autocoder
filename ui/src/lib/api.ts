@@ -14,6 +14,8 @@ import type {
   SetupStatus,
   DirectoryListResponse,
   PathValidationResponse,
+  AssistantConversation,
+  AssistantConversationDetail,
 } from './types'
 
 const API_BASE = '/api'
@@ -227,4 +229,41 @@ export async function validatePath(path: string): Promise<PathValidationResponse
     method: 'POST',
     body: JSON.stringify({ path }),
   })
+}
+
+// ============================================================================
+// Assistant Chat API
+// ============================================================================
+
+export async function listAssistantConversations(
+  projectName: string
+): Promise<AssistantConversation[]> {
+  return fetchJSON(`/assistant/conversations/${encodeURIComponent(projectName)}`)
+}
+
+export async function getAssistantConversation(
+  projectName: string,
+  conversationId: number
+): Promise<AssistantConversationDetail> {
+  return fetchJSON(
+    `/assistant/conversations/${encodeURIComponent(projectName)}/${conversationId}`
+  )
+}
+
+export async function createAssistantConversation(
+  projectName: string
+): Promise<AssistantConversation> {
+  return fetchJSON(`/assistant/conversations/${encodeURIComponent(projectName)}`, {
+    method: 'POST',
+  })
+}
+
+export async function deleteAssistantConversation(
+  projectName: string,
+  conversationId: number
+): Promise<void> {
+  await fetchJSON(
+    `/assistant/conversations/${encodeURIComponent(projectName)}/${conversationId}`,
+    { method: 'DELETE' }
+  )
 }
